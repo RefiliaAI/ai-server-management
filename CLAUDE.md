@@ -4,7 +4,7 @@
 AI Server Management
 
 ## Workflow (required for every change)
-This project uses **GitHub** (remote: (local only — add a GitHub remote later)). Follow this branch-based flow for
+This project uses **GitHub** (remote: https://github.com/RefiliaAI/ai-server-management). Follow this branch-based flow for
 **every** change — never commit directly to `main`:
 
 1. **Create a branch** for the change and push it to GitHub.
