@@ -77,9 +77,10 @@ for the full design.
 ## Lilith — Arch Linux + i3 desktop VM
 
 A minimalist, black/neon-green i3 desktop VM (VM 103, `lilith`), built from
-the official Arch Linux cloud image with a custom cloud-init first-boot
-setup. See [`lilith-arch-vm.md`](./lilith-arch-vm.md) for the full build and
-access details. Status: **built, pending the user's console verification.**
+the official Arch Linux cloud image and provisioned over SSH (German
+keyboard, 16GB RAM, 250GB disk). See [`lilith-arch-vm.md`](./lilith-arch-vm.md)
+for the full build and access details. Status: **built and verified up;
+pending the user's visual check of the desktop in the console.**
 
 ## Later / opportunistic
 
