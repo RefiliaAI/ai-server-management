@@ -74,6 +74,13 @@ action. Status: **blocked on Phase 2a and Phase 2b.** See
 [`phase2-3-ai-agent-architecture.md`](./phase2-3-ai-agent-architecture.md)
 for the full design.
 
+## Lilith — Arch Linux + i3 desktop VM
+
+A minimalist, black/neon-green i3 desktop VM (VM 103, `lilith`), built from
+the official Arch Linux cloud image with a custom cloud-init first-boot
+setup. See [`lilith-arch-vm.md`](./lilith-arch-vm.md) for the full build and
+access details. Status: **built, pending the user's console verification.**
+
 ## Later / opportunistic
 
 - Remote access (Tailscale or similar) — deliberately deferred out of Phase 1,
