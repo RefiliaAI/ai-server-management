@@ -21,12 +21,17 @@ cat > ~/.bash_profile <<'EOF'
 [[ -z "$DISPLAY" && "$(tty)" == "/dev/tty1" ]] && exec startx -- -keeptty
 EOF
 
+cat >> ~/.bashrc <<'EOF'
+printf '\033[1;32mLILITH // online\033[0m\n'
+EOF
+
 cat > ~/.config/i3/config <<'EOF'
 set $mod Mod4
 font pango:DejaVu Sans Mono 10
 
 exec --no-startup-id xsetroot -solid "#000000"
 exec --no-startup-id picom --config ~/.config/picom.conf
+exec --no-startup-id alacritty
 
 client.focused          #00ff66 #001a00 #00ff66 #00ff66 #00ff66
 client.focused_inactive #003311 #000000 #00ff66 #003311 #003311
@@ -197,6 +202,14 @@ EOF
 # ---- system-level config + packages (needs sudo) ----
 sudo bash -s <<'ROOTEOF'
 set -euxo pipefail
+
+# Guest-agent exec/exec-status is restricted for this project's Proxmox API
+# token (VM.GuestAgent.Unrestricted and VM.GuestAgent.FileRead are both
+# denied — see docs/lilith-arch-vm.md "Known limitation"), so diagnosing a
+# blank-looking console had to be done blind: `exec --no-startup-id
+# alacritty` above (auto-opening a terminal) was added after the first boot
+# looked like "all black except the status bar" — which was actually i3
+# working correctly with zero windows open, not a crash.
 
 # Grow the root filesystem to fill the 250G disk.
 ROOT_DEV=$(findmnt -no SOURCE /)

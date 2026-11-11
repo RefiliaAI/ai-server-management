@@ -1,9 +1,22 @@
 # Lilith: Arch Linux + i3 desktop VM
 
-**Status: built, confirmed up, pending the user's visual check in the
-console.** VM 103 (`lilith`) on the Proxmox host (`pve`, 192.168.178.39),
-built from the official Arch Linux cloud image. Not yet merged to `main` —
-see the workflow note at the bottom.
+**Status: built, confirmed up, auto-terminal fix applied, pending the
+user's visual re-check in the console.** VM 103 (`lilith`) on the Proxmox
+host (`pve`, 192.168.178.39), built from the official Arch Linux cloud
+image. Not yet merged to `main` — see the workflow note at the bottom.
+
+**2026-11-11 follow-up:** the user reported the console as entirely black
+except for a status line with green text at the bottom — read as "the i3
+desktop/theme never showed up." That description is actually consistent
+with i3 working correctly: black background (`xsetroot -solid "#000000"`)
+plus `i3bar`/`i3status` in green at the bottom, with zero windows open (i3
+never auto-opens one). Likely not a crash, just an empty workspace that
+doesn't visually read as "a desktop." Fix applied live and in this script:
+`exec --no-startup-id alacritty` now auto-opens a terminal on i3 startup,
+plus a small green `LILITH // online` banner in `.bashrc`, so the theme is
+visible immediately without needing to know `$mod+Return`. Applied by
+killing the Xorg/startx/i3 processes so the tty1 autologin chain restarts
+and picks up the new config — no reboot needed.
 
 ## Specs
 
@@ -83,11 +96,29 @@ confirmation).
 ## Access
 
 - **Console (primary):** Proxmox web UI → VM 103 → Console. Should
-  auto-log into i3 as `lilith` — this is the one thing the user still
-  needs to eyeball.
-- **SSH:** `ssh lilith@192.168.178.42`, password auth enabled. Ask for the
-  current password (not stored in this repo or anywhere persistent) or set
-  your own once logged in.
+  auto-log into i3 as `lilith`, now with a terminal already open — this is
+  the thing the user still needs to eyeball.
+- **SSH:** `ssh lilith@192.168.178.42`, password auth enabled. The `lilith`
+  password was reset once more during the 2026-11-11 diagnosis (via
+  guest-agent `chpasswd`, blind — see limitation below); it's not stored
+  anywhere persistent. Ask Claude for the current one, or just set your own
+  once logged into the console.
+
+## Known limitation: this project's Proxmox API token can't read guest output
+
+Discovered 2026-11-11 while diagnosing the blank-looking console: the
+Proxmox API token available to Claude Code here can call `agent/exec` (fire
+a command into a VM) and the "safe" read-only agent calls (`ping`,
+`network-get-interfaces`, `get-osinfo`), but **not** `agent/exec-status` or
+`agent/file-read` — both are rejected with `VM.GuestAgent.Unrestricted` /
+`VM.GuestAgent.FileRead` permission errors. That means Claude can run
+commands inside any VM here but cannot see their output or read any file
+through the guest agent — diagnosis has to go in blind (e.g. resetting a
+password via `chpasswd` piped through `exec`, then reasoning from what
+changes rather than reading logs). This isn't `lilith`-specific; it applies
+to every VM on this host and is worth knowing before expecting Claude to
+"check a log file" or "read a config" on any of them via the agent API —
+that only works over actual SSH.
 
 ## Workflow note
 
