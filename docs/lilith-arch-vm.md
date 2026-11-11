@@ -99,9 +99,11 @@ confirmation).
   auto-log into i3 as `lilith`, now with a terminal already open — this is
   the thing the user still needs to eyeball.
 - **SSH:** `ssh lilith@192.168.178.42`, password auth enabled. The `lilith`
-  password was reset once more during the 2026-11-11 diagnosis (via
-  guest-agent `chpasswd`, blind — see limitation below); it's not stored
-  anywhere persistent. Ask Claude for the current one, or just set your own
+  password was set to a user-chosen value on 2026-11-11 (again via blind
+  guest-agent `chpasswd` — see limitation below, so this couldn't be
+  confirmed by reading command output, only inferred from the VM staying
+  responsive afterward). The password itself isn't recorded here or
+  anywhere else in this repo; ask the user if you need it, or set your own
   once logged into the console.
 
 ## Known limitation: this project's Proxmox API token can't read guest output
