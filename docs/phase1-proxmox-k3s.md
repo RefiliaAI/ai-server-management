@@ -33,6 +33,12 @@ Confirmed live via SSH (`pve` = 192.168.178.39, `k3s-node1` = 192.168.178.40):
   - `prominence` namespace: `prominence-server` (Prominence II: Hasturian Era
     modpack), currently **running**, `LoadBalancer` service on `25565→30970`,
     40Gi PVC. See the RAM note in section 3 below for its memory history.
+    **Hardcore mode enabled 2026-11-19**: `server.properties` had
+    `hardcore=false`; set to `hardcore=true` directly in `/data/server.properties`
+    (no `HARDCORE` env var is set on the deployment, so this isn't overwritten
+    on restart) and applied via `kubectl rollout restart deployment/prominence-server
+    -n prominence`. Confirmed live afterward: new pod `1/1 Running`,
+    `server.properties` shows `hardcore=true`, world loaded with no errors.
   - `ita7761` namespace: a second Minecraft deployment, currently **scaled to
     0 replicas** (stopped), `NodePort` `25565:30565` plus a voice-chat UDP
     port `24454:30454`, 20Gi PVC.
