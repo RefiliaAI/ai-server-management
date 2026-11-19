@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lilith-survival-server
+  namespace: lilith-survival-server
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: lilith-survival-server
+  template:
+    metadata:
+      labels:
+        app: lilith-survival-server
+    spec:
+      containers:
+        - name: minecraft
+          image: itzg/minecraft-server:java17
+          env:
+            - { name: EULA, value: "TRUE" }
+            - { name: TYPE, value: "FORGE" }
+            - { name: VERSION, value: "1.20.1" }
+            - { name: FORGE_VERSION, value: "recommended" }
+            - { name: MODS_FILE, value: "/mods-list/mods.txt" }
+            - { name: REMOVE_OLD_MODS, value: "TRUE" }
+            - { name: INIT_MEMORY, value: "2G" }
+            - { name: MAX_MEMORY, value: "16G" }
+          ports:
+            - { containerPort: 25565, name: minecraft }
+          resources:
+            requests:
+              cpu: "1"
+              memory: "4Gi"
+            limits:
+              cpu: "4"
+              memory: "20Gi"
+          # 74 mods to download plus a heavy worldgen stack (Terralith, BoP,
+          # Tectonic, Cataclysm, Aquamirae) can take a long time on first
+          # boot — generous probe budgets avoid a liveness-triggered restart
+          # mid-download/mid-worldgen.
+          readinessProbe:
+            tcpSocket: { port: 25565 }
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            failureThreshold: 120
+          livenessProbe:
+            tcpSocket: { port: 25565 }
+            initialDelaySeconds: 1800
+            periodSeconds: 30
+          volumeMounts:
+            - { name: data, mountPath: /data }
+            - { name: mods-list, mountPath: /mods-list }
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: lilith-data
+        - name: mods-list
+          configMap:
+            name: lilith-mods

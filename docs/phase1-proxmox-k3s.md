@@ -28,7 +28,7 @@ Confirmed live via SSH (`pve` = 192.168.178.39, `k3s-node1` = 192.168.178.40):
   scheduled dynamically across the host's 24 logical CPUs, not reserving
   dedicated physical cores). Node is `Ready`. Storage class
   is the default `local-path`, as planned.
-- **Minecraft — three separate deployments exist, not just one validation
+- **Minecraft — four separate deployments exist, not just one validation
   server**:
   - `prominence` namespace: `prominence-server` (Prominence II: Hasturian Era
     modpack), currently **running**, `LoadBalancer` service on `25565→30970`,
@@ -40,6 +40,18 @@ Confirmed live via SSH (`pve` = 192.168.178.39, `k3s-node1` = 192.168.178.40):
     **scaled to 0**, `LoadBalancer` `25567:30566` with a separate RCON
     service, 15Gi PVC — looks like an early smoke-test from initial k3s
     validation.
+  - `lilith-survival-server` namespace: a fourth deployment (2026-11-19,
+    Forge 1.20.1, 74-mod custom pack — see
+    [`lilith-survival-server.md`](./lilith-survival-server.md) for the full
+    mod-inclusion/exclusion reasoning and memory sizing), currently
+    **running**, `NodePort` `25565:30567`, 20Gi PVC, `MAX_MEMORY=16G` /
+    container `limits.memory=20Gi`. Node headroom at deploy time: ~13.7Gi
+    (25%) actually used of ~54Gi, but ~47.8Gi (88%) already committed as
+    pod *limits* before this one was added — adding this pod's 20Gi limit
+    pushes worst-case concurrent-limit exposure past the node's physical
+    RAM if every pod (this one plus `prominence-server`) hit its ceiling at
+    once. Scheduling itself is fine (limits aren't reservations), but this
+    is a real risk worth revisiting if the node ever becomes memory-starved.
 - **Infrastructure beyond this runbook's original scope, also live and not
   documented anywhere in `docs/`**: a Traefik ingress fronting three services
   on custom DNS names with TLS (a `refilia-tls` secret per namespace) —
